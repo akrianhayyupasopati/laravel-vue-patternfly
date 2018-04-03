@@ -9,13 +9,22 @@ git clone https://github.com/pebri86/laravel-vue-patternfly.git
 ```
 
 ```bash
-composer update
+composer install
 php artisan key:generate
 php artisan jwt:generate
 php artisan serve
 ```
 
-go to browser and check address http://localhost:8000
+go to browser and check address http://localhost:8000 to test if it's work
+
+for further development with front end run this command
+
+```bash
+npm install
+npm run dev
+```
+
+Enjoy development!
 
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 

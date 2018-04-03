@@ -1,7 +1,7 @@
 <template>
 <div>
     <pf-notifications ref="notif" :toast="true"></pf-notifications>
-    <pf-layout :disabled="!$auth.check()" :horizontal="true" :flex="true">
+    <pf-layout :disabled="!$auth.check()" :horizontal="true" :display="display">
         <router-link slot="brand" :to="{ name: 'home' }" :exact="true" class="navbar-brand">
             <span class="navbar-brand-name">My Application</span>
         </router-link>
@@ -42,22 +42,32 @@
 </template>
 <script>
 import Perm from "./permission.js";
-
 export default {
   mixins: [Perm],
-    methods: {
-      logout(){
-        var app = this
-        this.$auth.logout({ 
-            success: function (resp) {
-                this.$root.$refs.notif.add('<strong>Successfully log out</strong>','success')
-            },
-            error: function () {
-                this.$root.$refs.notif.add('<strong>Logout failed</strong>, something gone wrong.','danger')
-            },
-            redirect: '/login',
-        });       
-      },
+  data() {
+    return {
+      'display': 'flex'
     }
+  },
+  methods: {
+    logout() {
+      var app = this;
+      this.$auth.logout({
+        success: function(resp) {
+          this.$root.$refs.notif.add(
+            "<strong>Successfully log out</strong>",
+            "success"
+          );
+        },
+        error: function() {
+          this.$root.$refs.notif.add(
+            "<strong>Logout failed</strong>, something gone wrong.",
+            "danger"
+          );
+        },
+        redirect: "/login"
+      });
+    }
+  }
 };
 </script>

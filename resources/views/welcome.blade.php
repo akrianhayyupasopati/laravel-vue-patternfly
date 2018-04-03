@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="container">
-        <pf-layout id="app" :icons="true"></pf-layout>
+        <pf-layout id="app" :icons="true" :disabled="true"></pf-layout>
     </div>
 <script src="/js/app.js"></script>
 </body>

@@ -106,16 +106,12 @@
   </div>
 </template>
 <script>
-import PfListView from "./../../ListView";
 import DownloadExcel from "vue-json-excel";
-import PfModal from "./../../Modal";
 import Perms from "./../../../permission.js";
 export default {
   mixins: [Perms],
   components: {
-    PfListView,
     DownloadExcel,
-    PfModal
   },
 
   data() {

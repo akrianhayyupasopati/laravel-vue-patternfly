@@ -60,18 +60,8 @@
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')"  @click="multiDelete"><i class="fa fa-trash"></i></button>
             <download-excel class="btn btn-default" type="button" :data="excelData" :fields="excelFields" name="users.xls"><i class="fa fa-file-excel-o"></i></download-excel>
           </div>
-          <div class="form-group form-inline">
-            <label class="form-label">Per page</label>
-            <select class="form-control" v-model="selected">
-              <option>10</option>
-              <option>25</option>
-              <option>50</option>
-              <option>100</option>
-              <option>500</option>
-            </select>
-          </div>
         </pf-toolbar>
-        <pf-table v-show="this.view=='table'" :striped="true" :bordered="true" :hover="true" :selectable="true" :sortable="true" :columns="tableColumns" :scrollable="true" :rows="rows" :page="page" :pages="pages" @update:page="updatePage" ref="selectionTable">
+        <pf-table v-show="this.view=='table'" :striped="true" :bordered="true" :hover="true" :selectable="true" :sortable="true" :columns="tableColumns" :scrollable="false" :rows="rows" :page="page" :totalItems="totalItems" :itemsPerPage="perPage" @update:page="updatePage" @update:itemsPerPage="updatePerPage" ref="selectionTable">
           <template slot-scope="data">
             <td v-if="tableColumns.includes('Id')">{{data.row.id}}</td>
             <td v-if="tableColumns.includes('Name')">{{data.row.name}}</td>
@@ -88,7 +78,7 @@
             <li><a href="#" @click="confirmDelete(data.row)">Delete</a></li>
           </template>
         </pf-table>
-        <pf-list-view v-show="this.view=='list'" :selectable="true" :page="page" :pages="pages" :rows="rows" @update:page="updatePage" ref="selectionList">
+        <pf-list-view v-show="this.view=='list'" :selectable="true" :page="page" :totalItems="totalItems" :itemsPerPage="perPage" :rows="rows" @update:page="updatePage" @update:itemsPerPage="updatePerPage" ref="selectionList">
           <template slot-scope="data">
             <div class="list-view-pf-left">
               <span class="fa fa-user list-view-pf-icon-sm"></span>
@@ -122,18 +112,12 @@
       </div>
 </template>
 <script>
-import PfConfirm from "./../../Confirm";
-import PfListView from "./../../ListView";
 import DownloadExcel from "vue-json-excel";
-import PfModal from "./../../Modal";
 import Perms from "./../../../permission.js";
 export default {
   mixins: [Perms],
   components: {
-    PfListView,
     DownloadExcel,
-    PfModal,
-    PfConfirm
   },
 
   data() {
@@ -182,6 +166,8 @@ export default {
       rows: [],
       page: 0,
       pages: 0,
+      perPage: 10,
+      totalItems: 0,
       loading: false,
       params: {},
       selected: 10,
@@ -212,12 +198,7 @@ export default {
     this.getRoles();
     this.showModal = false;
   },
-  watch: {
-    selected: function(selected) {
-      this.params.perPage = selected;
-      this.usersList();
-    }
-  },
+  watch: {},
   methods: {
     getRoles: function() {
       var app = this;
@@ -264,9 +245,9 @@ export default {
             app.rows = response.data.users.data;
           }
           app.page = response.data.users.current_page;
-          app.pages = response.data.users.last_page;
+          app.totalItems = response.data.users.total;
           app.resultCount = response.data.users.total;
-          app.selected = response.data.users.per_page;
+          app.perPage = parseInt(response.data.users.per_page);
           app.excelData = response.data.export;
           app.loading = false;
         })
@@ -281,6 +262,11 @@ export default {
     },
     updatePage: function(pageNumber) {
       this.params.page = pageNumber;
+      this.usersList();
+    },
+    updatePerPage: function(perPage) {
+      this.params.perPage = perPage;
+      this.params.page = 1;
       this.usersList();
     },
     filter: function(filters) {
