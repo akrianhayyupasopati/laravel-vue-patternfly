@@ -19,19 +19,11 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if (!$user = JWTAuth::parseToken()->authenticate()) {
-            return response()->json([
-                'status' => 'error',
-                'error' => 'token_not_found',
-                'msg' => 'Token not provided.',
-            ], 404);
+            return response()->json(['status' => 'error', 'error' => 'token_not_found', 'msg' => 'Token not provided.'], 404);
         }
 
         if (!$user->can('users-list')) {
-            return response([
-                'status' => 'error',
-                'error' => 'unauthorized',
-                'msg' => 'Permission denied.',
-            ], 401);
+            return response(['status' => 'error', 'error' => 'unauthorized', 'msg' => 'Permission denied.'], 401);
         }
 
         $query = User::query()->with('roles.perms');
@@ -57,11 +49,7 @@ class UserController extends Controller
         } else {
             $users = $export;
         }
-        return response([
-            'status' => 'success',
-            'users' => $users,
-            'export' => $export,
-        ]);
+        return response(['status' => 'success', 'users' => $users, 'export' => $export]);
     }
 
     /**
@@ -83,20 +71,11 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         if (!$user = JWTAuth::parseToken()->authenticate()) {
-            return response()->json([
-                'status' => 'error',
-                'error' => 'token_not_found',
-                'msg' => 'Token not provided.',
-            ], 404);
+            return response()->json(['status' => 'error', 'error' => 'token_not_found', 'msg' => 'Token not provided.'], 404);
         }
 
         if (!$user->can('manage-users')) {
-            return response([
-                'status' => 'error',
-                'error' => 'unauthorized',
-                'msg' => 'Permission denied.',
-            ], 401);
-        }
+            return response(['status' => 'error', 'error' => 'unauthorized', 'msg' => 'Permission denied.'], 401);}
 
         $user = new User;
         $user->email = $request->email;
@@ -105,10 +84,7 @@ class UserController extends Controller
         if ($user->save()) {
             $user->attachRole($request->role);
         }
-        return response([
-            'status' => 'success',
-        ], 200);
-    }
+        return response(['status' => 'success'], 200);}
 
     /**
      * Display the specified resource.
@@ -142,19 +118,10 @@ class UserController extends Controller
     public function update(EditUserRequest $request, $id)
     {
         if (!$user = JWTAuth::parseToken()->authenticate()) {
-            return response()->json([
-                'status' => 'error',
-                'error' => 'token_not_found',
-                'msg' => 'Token not provided.',
-            ], 404);
-        }
+            return response()->json(['status' => 'error', 'error' => 'token_not_found', 'msg' => 'Token not provided.'], 404);}
 
         if (!$user->can('manage-users')) {
-            return response([
-                'status' => 'error',
-                'error' => 'unauthorized',
-                'msg' => 'Permission denied.',
-            ], 401);
+            return response(['status' => 'error', 'error' => 'unauthorized', 'msg' => 'Permission denied.'], 401);
         }
 
         $user = User::find($id);
@@ -168,10 +135,7 @@ class UserController extends Controller
             DB::table('role_user')->where('user_id', $id)->delete();
             $user->attachRole($request->role);
         }
-        return response([
-            'status' => 'success',
-        ], 200);
-    }
+        return response(['status' => 'success'], 200);}
 
     /**
      * Remove the specified resource from storage.
@@ -182,26 +146,16 @@ class UserController extends Controller
     public function destroy($id)
     {
         if (!$user = JWTAuth::parseToken()->authenticate()) {
-            return response()->json([
-                'status' => 'error',
-                'error' => 'token_not_found',
-                'msg' => 'Token not provided.',
-            ], 404);
+            return response()->json(['status' => 'error', 'error' => 'token_not_found', 'msg' => 'Token not provided.'], 404);
         }
 
         if (!$user->can('manage-users')) {
-            return response([
-                'status' => 'error',
-                'error' => 'unauthorized',
-                'msg' => 'Permission denied.',
-            ], 401);
+            return response(['status' => 'error', 'error' => 'unauthorized', 'msg' => 'Permission denied.'], 401);
         }
 
         $user = User::find($id);
         $user->delete();
-        return response([
-            'status' => 'success',
-        ], 200);
+        return response(['status' => 'success'], 200);
     }
 
     /**
@@ -213,19 +167,11 @@ class UserController extends Controller
     public function groupDelete(Request $request)
     {
         if (!$user = JWTAuth::parseToken()->authenticate()) {
-            return response()->json([
-                'status' => 'error',
-                'error' => 'token_not_found',
-                'msg' => 'Token not provided.',
-            ], 404);
+            return response()->json(['status' => 'error', 'error' => 'token_not_found', 'msg' => 'Token not provided.'], 404);
         }
 
         if (!$user->can('manage-users')) {
-            return response([
-                'status' => 'error',
-                'error' => 'unauthorized',
-                'msg' => 'Permission denied.',
-            ], 401);
+            return response(['status' => 'error', 'error' => 'unauthorized', 'msg' => 'Permission denied.'], 401);
         }
 
         $users = $request->users;
@@ -233,9 +179,7 @@ class UserController extends Controller
             User::find($user['id'])->delete();
         }
 
-        return response([
-            'status' => 'success',
-        ]);
+        return response(['status' => 'success']);
 
     }
 }

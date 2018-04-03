@@ -1,5 +1,5 @@
 <template>
-	<div>        
+	<div>
     <pf-modal v-if="showModal" :title="modalTitle" @close="showModal = false">
       <form autocomplete="off" method="post">
             <input type="hidden" v-model="role.id"/>
@@ -12,7 +12,7 @@
                 <label for="display_name">Display name</label>
                 <input type="text" id="display_name" class="form-control" v-model="role.display_name" required>
                 <span class="help-block" v-if="error && errors.display_name">{{ errors.display_name[0] }}</span>
-            </div>          
+            </div>
             <div class="form-group" v-bind:class="{ 'has-error': error && errors.description }">
                 <label for="description">Decription</label>
                 <input type="text" id="description" class="form-control" v-model="role.description" required>
@@ -25,10 +25,10 @@
                 <span class="help-block" v-if="error && errors.permission">{{ errors.permission[0] }}</span>
             </div>
       </form>
-      <template slot="button">        
+      <template slot="button">
         <button class="btn btn-primary" @click="save">Save</button>
       </template>
-    </pf-modal>        
+    </pf-modal>
     <pf-modal v-if="showDisplay" title="Detail Record" @close="showDisplay = false">
       <dl class="dl dl-horizontal">
         <dt>Name</dt>
@@ -53,7 +53,7 @@
               <option>10</option>
               <option>25</option>
               <option>50</option>
-              <option>100</option>        
+              <option>100</option>
               <option>500</option>
             </select>
           </div>
@@ -108,11 +108,11 @@
             <li><a href="#" @click="edit(data.row)">Edit</a></li>
             <li><a href="#" @click="del(data.row)">Delete</a></li>
           </template>
-        </pf-list-view>      
+        </pf-list-view>
       </div>
 </template>
 <script>
-import VSelect from 'vue-select'
+import VSelect from "vue-select";
 import PfListView from "./../../ListView";
 import DownloadExcel from "vue-json-excel";
 import PfModal from "./../../Modal";
@@ -239,18 +239,18 @@ export default {
       })
         .then(function(response) {
           if (app.can("manage-permissions")) {
-            var options = []
+            var options = [];
             response.data.permissions.forEach(element => {
-              options.push({ label: element.display_name, value: element.id}) 
+              options.push({ label: element.display_name, value: element.id });
             });
             app.permissions = options;
           } else {
             response.data.permissions = response.data.permissions.filter(
               item => item.name !== "manage-permissions"
             );
-            var options = []
+            var options = [];
             response.data.permissions.forEach(element => {
-              options.push({ label: element.display_name, value: element.id}) 
+              options.push({ label: element.display_name, value: element.id });
             });
             app.permissions = options;
           }
@@ -343,7 +343,10 @@ export default {
         this.role.description = row.description;
         var permissions = [];
         for (var i = 0; i < row.perms.length; i++) {
-          permissions.push({value: row.perms[i].id, label: row.perms[i].display_name});
+          permissions.push({
+            value: row.perms[i].id,
+            label: row.perms[i].display_name
+          });
         }
         this.role.permissions = permissions;
         this.showModal = true;

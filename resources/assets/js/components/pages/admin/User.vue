@@ -21,7 +21,7 @@
                   <option v-for="(role,i) in roles" :key="i" :value="role.id">{{role.display_name}}</option>
                 </select>
                 <span class="help-block" v-if="error && errors.role">{{ errors.role[0] }}</span>
-            </div>            
+            </div>
             <div class="form-group" v-bind:class="{ 'has-error': error && errors.password }">
                 <label for="password">Password</label>
                 <input type="password" id="password" class="form-control" v-model="user.password" required>
@@ -33,10 +33,10 @@
                 <span class="help-block" v-if="error && errors.confirm_password">{{ errors.confirm_password[0] }}</span>
             </div>
       </form>
-      <template slot="button">        
+      <template slot="button">
         <button class="btn btn-primary" @click="save">Save</button>
       </template>
-    </pf-modal>        
+    </pf-modal>
     <pf-modal v-if="showDisplay" title="Detail Record" @close="showDisplay = false">
       <dl class="dl dl-horizontal">
         <dt>Name</dt>
@@ -66,7 +66,7 @@
               <option>10</option>
               <option>25</option>
               <option>50</option>
-              <option>100</option>        
+              <option>100</option>
               <option>500</option>
             </select>
           </div>
@@ -118,15 +118,15 @@
             <li><a href="#" @click="edit(data.row)">Edit</a></li>
             <li><a href="#" @click="confirmDelete(data.row)">Delete</a></li>
           </template>
-        </pf-list-view>      
+        </pf-list-view>
       </div>
 </template>
 <script>
-import PfConfirm from "./../../Confirm"
-import PfListView from "./../../ListView"
-import DownloadExcel from "vue-json-excel"
-import PfModal from "./../../Modal"
-import Perms from "./../../../permission.js"
+import PfConfirm from "./../../Confirm";
+import PfListView from "./../../ListView";
+import DownloadExcel from "vue-json-excel";
+import PfModal from "./../../Modal";
+import Perms from "./../../../permission.js";
 export default {
   mixins: [Perms],
   components: {
@@ -138,7 +138,7 @@ export default {
 
   data() {
     return {
-      confirm: '',
+      confirm: "",
       isConfirm: false,
       dataConfirm: null,
       user: {
@@ -178,14 +178,7 @@ export default {
       cols: ["Id", "Name", "Email", "Roles", "Created at", "Modified at"],
       pickedCols: ["Name", "Email", "Roles", "Created at", "Modified at"],
       resultCount: 0,
-      tableColumns: [
-        "Id",
-        "Name",
-        "Email",
-        "Roles",
-        "Created at",
-        "Modified at"
-      ],
+      tableColumns: [ "Id", "Name", "Email", "Roles", "Created at", "Modified at" ],
       rows: [],
       page: 0,
       pages: 0,
@@ -194,8 +187,8 @@ export default {
       selected: 10,
       excelData: [],
       excelFields: {
-        Name: "name",
-        Email: "email",
+        "Name": "name",
+        "Email": "email",
         "Created at": "created_at",
         "Modified at": "updated_at"
       },
@@ -380,37 +373,35 @@ export default {
         });
     },
     confirmDelete: function(data) {
-      this.dataConfirm = data
-      this.confirm = 'Are you sure want to delete this user with name ' +
-              data.name +
-              '? this cannot be undone.'
-      this.isConfirm = true
+      this.dataConfirm = data;
+      this.confirm =
+        "Are you sure want to delete this user with name " +
+        data.name +
+        "? this cannot be undone.";
+      this.isConfirm = true;
     },
     del: function(row) {
-      this.isConfirm = false
+      this.isConfirm = false;
       var app = this;
       if (this.can("manage-users")) {
-          this.axios({
-            method: "delete",
-            url: "/user/" + row.id
+        this.axios({
+          method: "delete",
+          url: "/user/" + row.id
+        })
+          .then(function(response) {
+            if (response.data.status == "success") {
+              app.$root.$refs.notif.add("User successfully deleted", "success");
+              app.showModal = false;
+              app.error = false;
+              app.usersList();
+            }
           })
-            .then(function(response) {
-              if (response.data.status == "success") {
-                app.$root.$refs.notif.add(
-                  "User successfully deleted",
-                  "success"
-                );
-                app.showModal = false;
-                app.error = false;
-                app.usersList();
-              }
-            })
-            .catch(function(error) {
-              app.$root.$refs.notif.add(
-                "Something wrong, cannot delete user",
-                "danger"
-              );
-            });
+          .catch(function(error) {
+            app.$root.$refs.notif.add(
+              "Something wrong, cannot delete user",
+              "danger"
+            );
+          });
       } else {
         this.$root.$refs.notif.add("Permission denied!", "danger");
       }
