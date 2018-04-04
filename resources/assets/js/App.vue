@@ -21,7 +21,7 @@
       </template>
       <template v-if="$auth.check()" slot="horizontal-menu">
         <li v-if="this.can('users-list')" class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-key" title="Admin Area"></span> Admin Area
+          <a class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-key" title="Admin Area"></span> Admin
           <b class="caret"></b></a>
           <ul class="dropdown-menu">
             <router-link :to="{ name: 'users' }" tag="li" active-class="active">
