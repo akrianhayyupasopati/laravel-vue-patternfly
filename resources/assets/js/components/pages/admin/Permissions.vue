@@ -1,5 +1,5 @@
 <template>
-	<div>        
+	<div>
     <pf-modal v-if="showModal" :title="modalTitle" @close="showModal = false">
       <form autocomplete="off" method="post">
             <input type="hidden" v-model="permission.id"/>
@@ -12,17 +12,17 @@
                 <label for="display_name">Display name</label>
                 <input type="text" id="display_name" class="form-control" v-model="permission.display_name" required>
                 <span class="help-block" v-if="error && errors.display_name">{{ errors.display_name[0] }}</span>
-            </div>          
+            </div>
             <div class="form-group" v-bind:class="{ 'has-error': error && errors.description }">
                 <label for="description">Decription</label>
                 <input type="text" id="description" class="form-control" v-model="permission.description" required>
                 <span class="help-block" v-if="error && errors.description">{{ errors.description[0] }}</span>
             </div>
       </form>
-      <template slot="button">        
+      <template slot="button">
         <button class="btn btn-primary" @click="save">Save</button>
       </template>
-    </pf-modal>        
+    </pf-modal>
     <pf-modal v-if="showDisplay" title="Detail Record" @close="showDisplay = false">
       <dl class="dl dl-horizontal">
         <dt>Name</dt>
@@ -39,23 +39,13 @@
     </pf-modal>
 		<legend><span v-if="loading" class="spinner spinner-inline"></span> Permissions Management</legend>
         <pf-toolbar :views="views" :view="view" :filter-fields="filterFields" :filters="filters" :columns="cols" :picked-columns="pickedCols" :sort-fields="sortFields" :sort-by="sortBy" :sort-direction="sortDirection" :result-count="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
-          <div class="form-group form-inline">
-            <label class="form-label">Per page</label>
-            <select class="form-control" v-model="selected">
-              <option>10</option>
-              <option>25</option>
-              <option>50</option>
-              <option>100</option>        
-              <option>500</option>
-            </select>
-          </div>
           <div class="form-group">
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-permissions')" @click="add" ><i class="fa fa-plus-square"></i></button>
             <button class="btn btn-default" type="button"  :disabled="!this.can('manage-permissions')"  @click="multiDelete"><i class="fa fa-trash"></i></button>
             <download-excel class="btn btn-default" type="button" :data="excelData" :fields="excelFields" name="permissions.xls"><i class="fa fa-file-excel-o"></i></download-excel>
           </div>
         </pf-toolbar>
-        <pf-table v-show="this.view=='table'" :striped="true" :bordered="true" :hover="true" :selectable="true" :sortable="true" :columns="tableColumns" :rows="rows" :page="page" :pages="pages" @update:page="updatePage" ref="selectionTable">
+        <pf-table v-show="this.view=='table'" :striped="true" :bordered="true" :hover="true" :selectable="true" :sortable="true" :columns="tableColumns" :rows="rows" :page="page" :totalItems="resultCount" :itemsPerPage="perPage" @update:page="updatePage" @update:itemsPerPage="updatePerPage" ref="selectionTable">
           <template slot-scope="data">
             <td v-if="tableColumns.includes('Id')">{{data.row.id}}</td>
             <td v-if="tableColumns.includes('Name')">{{data.row.name}}</td>
@@ -72,7 +62,7 @@
             <li><a href="#" @click="del(data.row)">Delete</a></li>
           </template>
         </pf-table>
-        <pf-list-view v-show="this.view=='list'" :selectable="true" :page="page" :pages="pages" :rows="rows" @update:page="updatePage" ref="selectionList">
+        <pf-list-view v-show="this.view=='list'" :selectable="true" :page="page" :totalItems="resultCount" :itemsPerPage="perPage" @update:page="updatePage" @update:itemsPerPage="updatePerPage" :rows="rows" ref="selectionList">
           <template slot-scope="data">
             <div class="list-view-pf-left">
               <span class="fa fa-lock list-view-pf-icon-sm"></span>
@@ -178,10 +168,9 @@ export default {
       ],
       rows: [],
       page: 0,
-      pages: 0,
+      perPage: 10,
       loading: false,
       params: {},
-      selected: 10,
       excelData: [],
       excelFields: {
         Name: "name",
@@ -203,17 +192,12 @@ export default {
     };
   },
   mounted() {
-    this.params.perPage = 10;
+    this.params.perPage = this.perPage;
     this.tableColumns = this.pickedCols;
     this.permissionsList();
     this.showModal = false;
   },
-  watch: {
-    selected: function(selected) {
-      this.params.perPage = selected;
-      this.permissionsList();
-    }
-  },
+  watch: {},
   methods: {
     permissionsList: function() {
       var app = this;
@@ -226,9 +210,8 @@ export default {
         .then(function(response) {
           app.rows = response.data.permissions.data;
           app.page = response.data.permissions.current_page;
-          app.pages = response.data.permissions.last_page;
-          app.resultCount = response.data.permissions.total;
-          app.selected = response.data.permissions.per_page;
+          app.resultCount = parseInt(response.data.permissions.total);
+          app.perPage = parseInt(response.data.permissions.per_page);
           app.excelData = response.data.export;
           app.loading = false;
         })
@@ -243,6 +226,11 @@ export default {
     },
     updatePage: function(pageNumber) {
       this.params.page = pageNumber;
+      this.permissionsList();
+    },
+    updatePerPage: function(perPage) {
+      this.params.perPage = perPage;
+      this.params.page = 1;
       this.permissionsList();
     },
     filter: function(filters) {

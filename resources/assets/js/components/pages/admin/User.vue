@@ -117,7 +117,7 @@ import Perms from "./../../../permission.js";
 export default {
   mixins: [Perms],
   components: {
-    DownloadExcel,
+    DownloadExcel
   },
 
   data() {
@@ -152,20 +152,27 @@ export default {
       },
       filters: [],
       sortFields: {
+        id: "Id",
         name: "Name",
         email: "Email",
         created_at: "Created at",
         updated_at: "Modified at"
       },
-      sortBy: "name",
+      sortBy: "id",
       sortDirection: "ascending",
       cols: ["Id", "Name", "Email", "Roles", "Created at", "Modified at"],
       pickedCols: ["Name", "Email", "Roles", "Created at", "Modified at"],
       resultCount: 0,
-      tableColumns: [ "Id", "Name", "Email", "Roles", "Created at", "Modified at" ],
+      tableColumns: [
+        "Id",
+        "Name",
+        "Email",
+        "Roles",
+        "Created at",
+        "Modified at"
+      ],
       rows: [],
       page: 0,
-      pages: 0,
       perPage: 10,
       totalItems: 0,
       loading: false,
@@ -173,8 +180,8 @@ export default {
       selected: 10,
       excelData: [],
       excelFields: {
-        "Name": "name",
-        "Email": "email",
+        Name: "name",
+        Email: "email",
         "Created at": "created_at",
         "Modified at": "updated_at"
       },
@@ -404,8 +411,10 @@ export default {
       this.user.email = row.email;
       this.user.created_at = row.created_at;
       this.user.updated_at = row.updated_at;
-      this.user.role = row.roles[0].display_name;
-      this.user.permissions = row.roles[0].perms;
+      if(row.roles.length > 0){
+        this.user.role = row.roles[0].display_name;
+        this.user.permissions = row.roles[0].perms;
+      }
       this.showDisplay = true;
     },
     multiDelete: function(event) {
