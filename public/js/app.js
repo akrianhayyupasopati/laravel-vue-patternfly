@@ -56284,7 +56284,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\nbody {\n    background:none;\n}\n", ""]);
+exports.push([module.i, "\nbody {\n  background: none;\n}\n", ""]);
 
 // exports
 
@@ -56300,7 +56300,114 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("h1", [_vm._v("Laravel 5 – Our Cool Dashboard")])
+  return _c("div", [
+    _c("h1", [_vm._v("Laravel 5 – Our Cool Dashboard")]),
+    _vm._v(" "),
+    _c("div", { staticClass: "cards-pf" }, [
+      _c("div", { staticClass: "row row-cards-pf" }, [
+        _c(
+          "div",
+          { staticClass: "col-md-6 col-lg-4" },
+          [
+            _c(
+              "pf-card",
+              {
+                attrs: {
+                  title: "System Resources",
+                  "foot-note": "Footer",
+                  filter: {
+                    position: "header",
+                    filters: [{ label: "Filter 1" }, { label: "Filter 2" }]
+                  }
+                }
+              },
+              [
+                _c("pf-c3-chart", {
+                  attrs: {
+                    type: "donut",
+                    title: "Memory",
+                    data: {
+                      columns: [["Used", 123], ["Available", 74]],
+                      groups: [["used", "available"]]
+                    }
+                  }
+                })
+              ],
+              1
+            )
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "col-md-6 col-lg-8" },
+          [
+            _c(
+              "pf-card",
+              { attrs: { title: "System Resources" } },
+              [
+                _c("pf-utilization-bar-chart", {
+                  attrs: {
+                    title: "RAM Usage",
+                    units: "MB",
+                    value: 8,
+                    total: 24
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { staticClass: "label-title" }, [
+                  _vm._v(
+                    "Inline Layouts with Error, Warning, and Ok Thresholds"
+                  )
+                ]),
+                _vm._v(" "),
+                _c("pf-utilization-bar-chart", {
+                  attrs: {
+                    title: "Disk I/O",
+                    units: "I/Ops",
+                    value: 450,
+                    total: 500,
+                    inline: "",
+                    warning: 60,
+                    error: 85
+                  }
+                }),
+                _vm._v(" "),
+                _c("pf-utilization-bar-chart", {
+                  attrs: {
+                    title: "CPU Usage",
+                    units: "MHz",
+                    value: 420,
+                    total: 500,
+                    inline: "",
+                    warning: 60,
+                    error: 85
+                  }
+                }),
+                _vm._v(" "),
+                _c("pf-utilization-bar-chart", {
+                  attrs: {
+                    title: "Memory",
+                    units: "GBs",
+                    value: 25,
+                    total: 100,
+                    inline: "",
+                    warning: 60,
+                    error: 85
+                  }
+                }),
+                _vm._v(" "),
+                _c("pf-utilization-bar-chart")
+              ],
+              1
+            )
+          ],
+          1
+        )
+      ])
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
