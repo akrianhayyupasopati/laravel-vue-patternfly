@@ -1,6 +1,6 @@
 <template>
 	<div>
-    <pf-modal v-if="showModal" :title="modalTitle" @close="showModal = false">
+    <pf-modal v-if="showModal" :title="modalTitle" @close="showModal = false" @confirm="save">
       <form autocomplete="off" method="post">
             <input type="hidden" v-model="permission.id"/>
             <div class="form-group" v-bind:class="{ 'has-error': error && errors.name }">
@@ -19,9 +19,6 @@
                 <span class="help-block" v-if="error && errors.description">{{ errors.description[0] }}</span>
             </div>
       </form>
-      <template slot="button">
-        <button class="btn btn-primary" @click="save">Save</button>
-      </template>
     </pf-modal>
     <pf-modal v-if="showDisplay" title="Detail Record" @close="showDisplay = false">
       <dl class="dl dl-horizontal">
@@ -37,7 +34,8 @@
         <dd>{{permission.updated_at}}</dd>
       </dl>
     </pf-modal>
-		<legend><span v-if="loading" class="spinner spinner-inline"></span> Permissions Management</legend>
+		<legend>Permissions Management</legend>
+        <pf-spinner :loading="loading" size="lg">
         <pf-toolbar :views="views" :view="view" :filter-fields="filterFields" :filters="filters" :columns="cols" :picked-columns="pickedCols" :sort-fields="sortFields" :sort-by="sortBy" :sort-direction="sortDirection" :result-count="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
           <div class="form-group">
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-permissions')" @click="add" ><i class="fa fa-plus-square"></i></button>
@@ -93,6 +91,7 @@
             <li><a href="#" @click="del(data.row)">Delete</a></li>
           </template>
         </pf-list-view>
+        </pf-spinner>
   </div>
 </template>
 <script>
@@ -101,7 +100,7 @@ import Perms from "./../../../permission.js";
 export default {
   mixins: [Perms],
   components: {
-    DownloadExcel,
+    DownloadExcel
   },
 
   data() {

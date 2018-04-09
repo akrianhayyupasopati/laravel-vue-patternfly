@@ -1,7 +1,9 @@
 <template>
 	<div>
-    <pf-confirm :message="confirm" :showConfirm="isConfirm" :data="dataConfirm" @on:confirm="del(arguments[0])" @on:close="isConfirm=false"></pf-confirm>
-    <pf-modal v-if="showModal" :title="modalTitle" @close="showModal = false">
+    <pf-modal v-if="isConfirm" title="Please confirm" @close="isConfirm=false" @cancel="isConfirm=false" @confirm="del">
+      {{ confirm }}
+    </pf-modal>
+    <pf-modal v-if="showModal" :title="modalTitle" @close="showModal=false" @cancel="showModal=false" @confirm="save">
       <form autocomplete="off" method="post">
             <input type="hidden" v-model="user.id"/>
             <div class="form-group" v-bind:class="{ 'has-error': error && errors.name }">
@@ -33,11 +35,8 @@
                 <span class="help-block" v-if="error && errors.confirm_password">{{ errors.confirm_password[0] }}</span>
             </div>
       </form>
-      <template slot="button">
-        <button class="btn btn-primary" @click="save">Save</button>
-      </template>
     </pf-modal>
-    <pf-modal v-if="showDisplay" title="Detail Record" @close="showDisplay = false">
+    <pf-modal v-if="showDisplay" title="Detail Record" @close="showDisplay = false" cancelButton="">
       <dl class="dl dl-horizontal">
         <dt>Name</dt>
         <dd>{{user.name}}</dd>
@@ -53,11 +52,12 @@
         <dd><li class="text text-success" v-for="(perm,i) in user.permissions" :key="i">{{perm.display_name}} </li></dd>
       </dl>
     </pf-modal>
-		<legend><span v-if="loading" class="spinner spinner-inline"></span> Users Management</legend>
-        <pf-toolbar :views="views" :view="view" :filter-fields="filterFields" :filters="filters" :columns="cols" :picked-columns="pickedCols" :sort-fields="sortFields" :sort-by="sortBy" :sort-direction="sortDirection" :result-count="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
+		<legend>Users Management</legend>
+        <pf-spinner :loading="loading" size="lg">
+        <pf-toolbar :views="views" :view="view" :filterFields="filterFields" :filters="filters" :columns="cols" :pickedColumns="pickedCols" :sortFields="sortFields" :sortBy="sortBy" :sortDirection="sortDirection" :resultCount="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
           <div class="form-group">
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')" @click="add" ><i class="fa fa-plus-square"></i></button>
-            <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')"  @click="multiDelete"><i class="fa fa-trash"></i></button>
+            <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')"  @click="confirmDelete(null, true)"><i class="fa fa-trash"></i></button>
             <download-excel class="btn btn-default" type="button" :data="excelData" :fields="excelFields" name="users.xls"><i class="fa fa-file-excel-o"></i></download-excel>
           </div>
         </pf-toolbar>
@@ -75,40 +75,43 @@
           </template>
           <template slot="dropdown" slot-scope="data">
             <li><a href="#" @click="edit(data.row)">Edit</a></li>
-            <li><a href="#" @click="confirmDelete(data.row)">Delete</a></li>
+            <li><a href="#" @click="confirmDelete(data.row,false)">Delete</a></li>
           </template>
         </pf-table>
-        <pf-list-view v-show="this.view=='list'" :selectable="true" :page="page" :totalItems="totalItems" :itemsPerPage="perPage" :rows="rows" @update:page="updatePage" @update:itemsPerPage="updatePerPage" ref="selectionList">
+        <pf-list-view v-show="this.view=='list'" :expandable="true" :stacked="true" :selectable="true" :page="page" :totalItems="totalItems" :itemsPerPage="perPage" :rows="rows" @update:page="updatePage" @update:itemsPerPage="updatePerPage" ref="selectionList">
           <template slot-scope="data">
-            <div class="list-view-pf-left">
-              <span class="fa fa-user list-view-pf-icon-sm"></span>
-            </div>
-            <div class="list-view-pf-body list-view-pf-stacked">
-              <div class="list-view-pf-description">
-                <div class="list-group-item-heading">{{data.row.name}}</div>
-                <div class="list-group-item-text"><i class="fa fa-envelope"></i> {{data.row.email}}</div>
-                <div class="list-group-item-text" v-for="(role,i) in data.row.roles" :key="i"><i class="fa fa-key"></i> {{role.display_name}}</div>
-              </div>
-              <div class="list-view-pf-additional-info">
-                <div class="list-view-pf-additional-info-item list-view-pf-additional-info-stacked">
-                  <span class="fa fa-plus-square"></span>
-                  {{data.row.created_at}}
-                </div>
-                <div class="list-view-pf-additional-info-item list-view-pf-additional-info-stacked">
-                  <span class="fa fa-pencil-square"></span>
-                  {{data.row.updated_at}}
-                </div>
-              </div>
-            </div>
+            <pf-list-item icon="fa-user" iconVariant="info" iconSize="sm">
+              <template slot="heading">
+                {{data.row.name}}
+              </template>
+              <template slot="description">
+                <pf-icon name="fa-envelope"></pf-icon> {{data.row.email}} <br/>
+                <pf-icon name="fa-lock"></pf-icon><span v-for="(role,i) in data.row.roles" :key="i"> {{role.display_name}}</span>
+              </template>
+              <template slot="additional-info" v-if="data.row.roles.length > 0">
+                <pf-list-item-additional-info :stacked="true" v-for="(perm,i) in data.row.roles[0].perms" :key="i"><pf-icon name="fa-key" class="fa"></pf-icon>
+                  {{perm.display_name}}
+                </pf-list-item-additional-info>
+              </template>
+            </pf-list-item>
           </template>
           <template slot="action" slot-scope="data">
             <a class="btn btn-default" href="#" @click="display(data.row)">Display</a>
           </template>
           <template slot="dropdown" slot-scope="data">
             <li><a href="#" @click="edit(data.row)">Edit</a></li>
-            <li><a href="#" @click="confirmDelete(data.row)">Delete</a></li>
+            <li><a href="#" @click="confirmDelete(data.row,false)">Delete</a></li>
+          </template>
+          <template slot="expansion" slot-scope="data">
+            <dl class="dl-horizontal">
+              <dt>Created</dt>
+              <dd>{{data.row.created_at}}</dd>
+              <dt>Last modified</dt>
+              <dd>{{data.row.updated_at}}</dd>
+            </dl>
           </template>
         </pf-list-view>
+        </pf-spinner>
       </div>
 </template>
 <script>
@@ -119,11 +122,11 @@ export default {
   components: {
     DownloadExcel
   },
-
   data() {
     return {
       confirm: "",
       isConfirm: false,
+      multiDelete: false,
       dataConfirm: null,
       user: {
         id: "",
@@ -315,7 +318,9 @@ export default {
         this.user.id = row.id;
         this.user.name = row.name;
         this.user.email = row.email;
-        this.user.role = row.roles[0].id;
+        if (row.roles.length > 0) {
+          this.user.role = row.roles[0].id;
+        }
         this.user.password = "";
         this.user.confirm_password = "";
         this.showModal = true;
@@ -365,73 +370,74 @@ export default {
           app.errors = error.response.data;
         });
     },
-    confirmDelete: function(data) {
+    confirmDelete: function(data, multiDelete) {
+      this.multiDelete = multiDelete;
       this.dataConfirm = data;
-      this.confirm =
-        "Are you sure want to delete this user with name " +
-        data.name +
-        "? this cannot be undone.";
-      this.isConfirm = true;
+      if (multiDelete) {
+        var selection = [];
+        if (this.view == "table") {
+          selection = this.$refs.selectionTable.getSelected();
+        } else {
+          selection = this.$refs.selectionList.getSelected();
+        }
+        if (selection.length > 0) {
+          this.confirm =
+            "Are you sure want to delete " +
+            selection.length +
+            " user(s)? this operation couldn't be undone.";
+          this.isConfirm = true;
+        } else {
+          this.$root.$refs.notif.add("No users selected.", "warning");
+        }
+      } else {
+        this.confirm =
+          "Are you sure want to delete this user with name " +
+          data.name +
+          "? this cannot be undone.";
+        this.isConfirm = true;
+      }
     },
-    del: function(row) {
+    del: function() {
+      this.loading = true;
       this.isConfirm = false;
       var app = this;
-      if (this.can("manage-users")) {
-        this.axios({
-          method: "delete",
-          url: "/user/" + row.id
-        })
-          .then(function(response) {
-            if (response.data.status == "success") {
-              app.$root.$refs.notif.add("User successfully deleted", "success");
-              app.showModal = false;
-              app.error = false;
-              app.usersList();
-            }
+      if (!app.multiDelete) {
+        if (this.can("manage-users")) {
+          this.axios({
+            method: "delete",
+            url: "/user/" + app.dataConfirm.id
           })
-          .catch(function(error) {
-            app.$root.$refs.notif.add(
-              "Something wrong, cannot delete user",
-              "danger"
-            );
-          });
+            .then(function(response) {
+              if (response.data.status == "success") {
+                app.$root.$refs.notif.add(
+                  "User successfully deleted",
+                  "success"
+                );
+                app.showModal = false;
+                app.error = false;
+                app.usersList();
+                app.loading = false;
+              }
+            })
+            .catch(function(error) {
+              app.$root.$refs.notif.add(
+                "Something wrong, cannot delete user",
+                "danger"
+              );
+              app.loading = false;
+            });
+        } else {
+          this.$root.$refs.notif.add("Permission denied!", "danger");
+          app.loading = false;
+        }
       } else {
-        this.$root.$refs.notif.add("Permission denied!", "danger");
-      }
-    },
-    save: function() {
-      if (!this.editing) {
-        this.create();
-      } else {
-        this.update();
-      }
-    },
-    display: function(row) {
-      this.user.name = row.name;
-      this.user.email = row.email;
-      this.user.created_at = row.created_at;
-      this.user.updated_at = row.updated_at;
-      if(row.roles.length > 0){
-        this.user.role = row.roles[0].display_name;
-        this.user.permissions = row.roles[0].perms;
-      }
-      this.showDisplay = true;
-    },
-    multiDelete: function(event) {
-      var app = this;
-      event.preventDefault();
-      var selection = [];
-      if (this.view == "table")
-        selection = this.$refs.selectionTable.getSelected();
-      else selection = this.$refs.selectionList.getSelected();
-      if (selection.length > 0) {
-        if (
-          confirm(
-            "Are you sure want to delete " +
-              selection.length +
-              " user(s)? this operation couldn't be undone."
-          )
-        ) {
+        var selection = [];
+        if (this.view == "table") {
+          selection = this.$refs.selectionTable.getSelected();
+        } else {
+          selection = this.$refs.selectionList.getSelected();
+        }
+        if (selection.length > 0) {
           this.axios({
             method: "post",
             url: "/user/group_delete",
@@ -446,6 +452,7 @@ export default {
                 app.$refs.selectionTable.setAllSelected(false);
               else app.$refs.selectionList.setAllSelected(false);
               app.usersList();
+              app.loading = false;
             })
             .catch(function(error) {
               app.loading = false;
@@ -453,12 +460,31 @@ export default {
                 "An error occured couldn't delete users",
                 "danger"
               );
-              console.log(error);
+              app.loading = false;
             });
+        } else {
+          app.$root.$refs.notif.add("No users selected.", "warning");
+          app.loading = false;
         }
-      } else {
-        app.$root.$refs.notif.add("No users selected.", "warning");
       }
+    },
+    save: function() {
+      if (!this.editing) {
+        this.create();
+      } else {
+        this.update();
+      }
+    },
+    display: function(row) {
+      this.user.name = row.name;
+      this.user.email = row.email;
+      this.user.created_at = row.created_at;
+      this.user.updated_at = row.updated_at;
+      if (row.roles.length > 0) {
+        this.user.role = row.roles[0].display_name;
+        this.user.permissions = row.roles[0].perms;
+      }
+      this.showDisplay = true;
     }
   }
 };

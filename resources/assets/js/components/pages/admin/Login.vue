@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-sm-12">
         <div id="brand">
-          <h1><strong>My Application</strong></h1>
+          <h1><strong>PATTERNFLY ENTERPRISE</strong></h1>
         </div><!--/#brand-->
       </div><!--/.col-*-->
       <div class="col-sm-7 col-md-6 col-lg-5 login">
@@ -35,8 +35,10 @@
         </form>
       </div><!--/.col-*-->
       <div class="col-sm-5 col-md-6 col-lg-7 details">
-        <p><strong>Welcome to My Application</strong></p>
-        <p>Silahkan log in untuk dapat mengakses aplikasi.</p>
+        <p><strong>Welcome to Laravel-Vue-PatternFly demo application!</strong></p>
+        <p>Please log in to access application.</p>
+        <p>Default login as Developer, email: <strong>developer@developer.com</strong> password: <strong>p@ssw0rd</strong></p>
+        <p>Default login as Super Administrator, email: <strong>superadmin@admin.com</strong> password: <strong>superadmin</strong></p>
         <p class="small">copyright &copy; 2017</p>
       </div><!--/.col-*-->
     </div><!--/.row-->
@@ -53,13 +55,13 @@ export default {
     };
   },
   mounted() {
-    var tag = document.getElementsByTagName("html")[0]
-    tag.classList.add("login-pf")
+    var tag = document.getElementsByTagName("html")[0];
+    tag.classList.add("login-pf");
   },
   methods: {
     login() {
-      var app = this
-      app.loading = true
+      var app = this;
+      app.loading = true;
       this.$auth.login({
         params: {
           email: app.email,
@@ -71,13 +73,13 @@ export default {
             "success"
           );
           app.loading = false;
-          var tag = document.getElementsByTagName("html")[0]
-          tag.classList.remove("login-pf")
+          var tag = document.getElementsByTagName("html")[0];
+          tag.classList.remove("login-pf");
         },
         error: function(error) {
-          app.loading = false
+          app.loading = false;
           this.$root.$refs.notif.add(
-            "<strong>Login failed</strong>, "+error.response.data.msg,
+            "<strong>Login failed</strong>, " + error.response.data.msg,
             "danger"
           );
         },
