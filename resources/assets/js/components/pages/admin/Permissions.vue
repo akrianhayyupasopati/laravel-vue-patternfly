@@ -68,8 +68,7 @@
             <div class="list-view-pf-body list-view-pf-stacked">
               <div class="list-view-pf-description">
                 <div class="list-group-item-heading">{{data.row.display_name}}</div>
-                <div class="list-group-item-text"><dt>Name</dt><dd>{{data.row.name}}</dd></div>
-                <div class="list-group-item-text"><dt>Description</dt><dd>{{data.row.description}}</dd></div>
+                <div class="list-group-item-text"><dt>Name</dt><dd>{{data.row.name}}</dd><dt>Description</dt><dd>{{data.row.description}}</dd></div>
               </div>
               <div class="list-view-pf-additional-info">
                 <div class="list-view-pf-additional-info-item list-view-pf-additional-info-stacked">
@@ -233,7 +232,8 @@ export default {
       this.permissionsList();
     },
     filter: function(filters) {
-      this.params.search = filters;
+      this.filters = filters;
+      this.params.search = this.filters;
       this.params.page = 1;
       this.permissionsList();
     },

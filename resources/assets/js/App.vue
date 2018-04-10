@@ -10,16 +10,33 @@
             <a v-if="!$auth.check()">Login</a>
           </router-link>
           <li>
-            <a><pf-icon name="fa-bell"/></a>
+            <a @click="drawerHide= !drawerHide"><pf-icon name="fa-bell"/><span class="badge"><span> </span></span></a>
+            <pf-drawer :hidden="drawerHide" :allowExpand="false" title="Notification">
+              <pf-drawer-group title="News Feeds" counter="3" action="Clear All">
+                <pf-drawer-notification
+                message="Worker #1 has been down" date="20 February 2018" time="18:25" type="danger" :action="action" :actions="actions">
+                </pf-drawer-notification>
+                <pf-drawer-notification
+                message="New user registered" date="20 February 2018" time="13:05">
+                </pf-drawer-notification>
+                <pf-drawer-notification
+                message="Proposal request approved" date="20 February 2018" time="15:08" type="success" :action="action">
+                </pf-drawer-notification>
+              </pf-drawer-group>
+              <pf-drawer-group title="Group Updates" :loading="true">
+              </pf-drawer-group>
+            </pf-drawer>            
           </li>
           <li>
             <bs-dropdown type="link" class="dropdown pull-right">
               <template slot="button" type="link">
-                <pf-icon name="fa-user"></pf-icon> {{this.$auth.user().name}}
+                <pf-icon name="pficon-user"></pf-icon> {{this.$auth.user().name}}
               </template>
-              <ul slot="dropdown-menu" class="dropdown-menu">
+              <ul slot="dropdown-menu" class="dropdown-menu"><li>
+                <a href="#"><pf-icon name="pficon-user"></pf-icon> My Profile</a>
+              </li>
               <li>
-                <a href="#" @click.prevent="logout"><i class="fa fa-power-off"></i> Logout</a>
+                <a href="#" @click.prevent="logout"><pf-icon name="fa-power-off"></pf-icon> Logout</a>
               </li>
               </ul>
             </bs-dropdown>
@@ -81,7 +98,25 @@ export default {
   },
   data() {
     return {
-      display: "flex"
+      display: "flex",
+      drawerHide: true,
+      action: {
+        name: "Check",
+        title: "Check this item",
+        button: true
+      },
+      actions: [
+        {
+          name: "Restart"
+        },
+        {
+          name: "Delete"
+        },
+        "-",
+        {
+          name: "Repair"
+        }
+      ]
     };
   },
   methods: {

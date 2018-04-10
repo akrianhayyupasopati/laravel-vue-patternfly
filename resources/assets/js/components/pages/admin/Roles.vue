@@ -83,7 +83,7 @@
               </div>
               <div class="list-view-pf-additional-info">
                 <div class="list-view-pf-additional-info-item list-view-pf-additional-info-stacked"  v-for="(perm,i) in data.row.perms" :key="i">
-                  <span class="fa fa-key"></span>
+                  <pf-icon name="pficon-key"></pf-icon>
                   {{perm.display_name}}
                 </div>
               </div>
@@ -286,7 +286,8 @@ export default {
       this.rolesList();
     },
     filter: function(filters) {
-      this.params.search = filters;
+      this.filters = filters;
+      this.params.search = this.filters;
       this.params.page = 1;
       this.rolesList();
     },

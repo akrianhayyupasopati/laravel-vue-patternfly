@@ -1900,6 +1900,23 @@ module.exports = Cancel;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1910,7 +1927,20 @@ module.exports = Cancel;
   },
   data: function data() {
     return {
-      display: "flex"
+      display: "flex",
+      drawerHide: true,
+      action: {
+        name: "Check",
+        title: "Check this item",
+        button: true
+      },
+      actions: [{
+        name: "Restart"
+      }, {
+        name: "Delete"
+      }, "-", {
+        name: "Repair"
+      }]
     };
   },
 
@@ -2360,8 +2390,9 @@ module.exports = Cancel;
       this.params.page = 1;
       this.usersList();
     },
-    filter: function filter(filters) {
-      this.params.search = filters;
+    updateFilters: function updateFilters(activeFilters) {
+      this.filters = activeFilters;
+      this.params.search = this.filters;
       this.params.page = 1;
       this.usersList();
     },
@@ -3012,7 +3043,8 @@ module.exports = Cancel;
       this.rolesList();
     },
     filter: function filter(filters) {
-      this.params.search = filters;
+      this.filters = filters;
+      this.params.search = this.filters;
       this.params.page = 1;
       this.rolesList();
     },
@@ -3269,7 +3301,6 @@ module.exports = Cancel;
 //
 //
 //
-//
 
 
 
@@ -3381,7 +3412,8 @@ module.exports = Cancel;
       this.permissionsList();
     },
     filter: function filter(filters) {
-      this.params.search = filters;
+      this.filters = filters;
+      this.params.search = this.filters;
       this.params.page = 1;
       this.permissionsList();
     },
@@ -55988,9 +56020,86 @@ var render = function() {
                 [!_vm.$auth.check() ? _c("a", [_vm._v("Login")]) : _vm._e()]
               ),
               _vm._v(" "),
-              _c("li", [
-                _c("a", [_c("pf-icon", { attrs: { name: "fa-bell" } })], 1)
-              ]),
+              _c(
+                "li",
+                [
+                  _c(
+                    "a",
+                    {
+                      on: {
+                        click: function($event) {
+                          _vm.drawerHide = !_vm.drawerHide
+                        }
+                      }
+                    },
+                    [
+                      _c("pf-icon", { attrs: { name: "fa-bell" } }),
+                      _c("span", { staticClass: "badge" }, [_c("span")])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "pf-drawer",
+                    {
+                      attrs: {
+                        hidden: _vm.drawerHide,
+                        allowExpand: false,
+                        title: "Notification"
+                      }
+                    },
+                    [
+                      _c(
+                        "pf-drawer-group",
+                        {
+                          attrs: {
+                            title: "News Feeds",
+                            counter: "3",
+                            action: "Clear All"
+                          }
+                        },
+                        [
+                          _c("pf-drawer-notification", {
+                            attrs: {
+                              message: "Worker #1 has been down",
+                              date: "20 February 2018",
+                              time: "18:25",
+                              type: "danger",
+                              action: _vm.action,
+                              actions: _vm.actions
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("pf-drawer-notification", {
+                            attrs: {
+                              message: "New user registered",
+                              date: "20 February 2018",
+                              time: "13:05"
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("pf-drawer-notification", {
+                            attrs: {
+                              message: "Proposal request approved",
+                              date: "20 February 2018",
+                              time: "15:08",
+                              type: "success",
+                              action: _vm.action
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c("pf-drawer-group", {
+                        attrs: { title: "Group Updates", loading: true }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
               _vm._v(" "),
               _c(
                 "li",
@@ -56006,7 +56115,7 @@ var render = function() {
                         "template",
                         { attrs: { type: "link" }, slot: "button" },
                         [
-                          _c("pf-icon", { attrs: { name: "fa-user" } }),
+                          _c("pf-icon", { attrs: { name: "pficon-user" } }),
                           _vm._v(
                             " " +
                               _vm._s(this.$auth.user().name) +
@@ -56027,6 +56136,20 @@ var render = function() {
                           _c("li", [
                             _c(
                               "a",
+                              { attrs: { href: "#" } },
+                              [
+                                _c("pf-icon", {
+                                  attrs: { name: "pficon-user" }
+                                }),
+                                _vm._v(" My Profile")
+                              ],
+                              1
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("li", [
+                            _c(
+                              "a",
                               {
                                 attrs: { href: "#" },
                                 on: {
@@ -56037,9 +56160,12 @@ var render = function() {
                                 }
                               },
                               [
-                                _c("i", { staticClass: "fa fa-power-off" }),
+                                _c("pf-icon", {
+                                  attrs: { name: "fa-power-off" }
+                                }),
                                 _vm._v(" Logout")
-                              ]
+                              ],
+                              1
                             )
                           ])
                         ]
@@ -57691,7 +57817,7 @@ var render = function() {
                 resultCount: _vm.resultCount
               },
               on: {
-                "update:filters": _vm.filter,
+                "update:filters": _vm.updateFilters,
                 "sort-by": _vm.sort,
                 "update:pickedColumns": _vm.setVisible,
                 "update:view": _vm.setView
@@ -57957,7 +58083,7 @@ var render = function() {
                                   [
                                     _c("pf-icon", {
                                       staticClass: "fa",
-                                      attrs: { name: "fa-key" }
+                                      attrs: { name: "pficon-key" }
                                     }),
                                     _vm._v(
                                       "\n                  " +
@@ -58660,13 +58786,16 @@ var render = function() {
                                   "list-view-pf-additional-info-item list-view-pf-additional-info-stacked"
                               },
                               [
-                                _c("span", { staticClass: "fa fa-key" }),
+                                _c("pf-icon", {
+                                  attrs: { name: "pficon-key" }
+                                }),
                                 _vm._v(
                                   "\n                  " +
                                     _vm._s(perm.display_name) +
                                     "\n                "
                                 )
-                              ]
+                              ],
+                              1
                             )
                           })
                         )
@@ -59262,10 +59391,7 @@ var render = function() {
                           _vm._v(" "),
                           _c("div", { staticClass: "list-group-item-text" }, [
                             _c("dt", [_vm._v("Name")]),
-                            _c("dd", [_vm._v(_vm._s(data.row.name))])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "list-group-item-text" }, [
+                            _c("dd", [_vm._v(_vm._s(data.row.name))]),
                             _c("dt", [_vm._v("Description")]),
                             _c("dd", [_vm._v(_vm._s(data.row.description))])
                           ])

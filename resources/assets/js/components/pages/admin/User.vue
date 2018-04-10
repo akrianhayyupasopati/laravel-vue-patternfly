@@ -54,7 +54,7 @@
     </pf-modal>
 		<legend>Users Management</legend>
         <pf-spinner :loading="loading" size="lg">
-        <pf-toolbar :views="views" :view="view" :filterFields="filterFields" :filters="filters" :columns="cols" :pickedColumns="pickedCols" :sortFields="sortFields" :sortBy="sortBy" :sortDirection="sortDirection" :resultCount="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
+        <pf-toolbar :views="views" :view="view" :filterFields="filterFields" :filters="filters" :columns="cols" :pickedColumns="pickedCols" :sortFields="sortFields" :sortBy="sortBy" :sortDirection="sortDirection" :resultCount="resultCount" @update:filters="updateFilters" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
           <div class="form-group">
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')" @click="add" ><i class="fa fa-plus-square"></i></button>
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')"  @click="confirmDelete(null, true)"><i class="fa fa-trash"></i></button>
@@ -89,7 +89,7 @@
                 <pf-icon name="fa-lock"></pf-icon><span v-for="(role,i) in data.row.roles" :key="i"> {{role.display_name}}</span>
               </template>
               <template slot="additional-info" v-if="data.row.roles.length > 0">
-                <pf-list-item-additional-info :stacked="true" v-for="(perm,i) in data.row.roles[0].perms" :key="i"><pf-icon name="fa-key" class="fa"></pf-icon>
+                <pf-list-item-additional-info :stacked="true" v-for="(perm,i) in data.row.roles[0].perms" :key="i"><pf-icon name="pficon-key" class="fa"></pf-icon>
                   {{perm.display_name}}
                 </pf-list-item-additional-info>
               </template>
@@ -279,8 +279,9 @@ export default {
       this.params.page = 1;
       this.usersList();
     },
-    filter: function(filters) {
-      this.params.search = filters;
+    updateFilters: function(activeFilters) {
+      this.filters = activeFilters;
+      this.params.search = this.filters;
       this.params.page = 1;
       this.usersList();
     },
