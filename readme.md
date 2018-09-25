@@ -4,18 +4,30 @@
 
 Clone the repo
 
-```bash
+```
 git clone https://github.com/pebri86/laravel-vue-patternfly.git
 ```
 
-```bash
-composer install
-php artisan key:generate
-php artisan jwt:generate
-php artisan serve
+```
+# composer install
+# cp .env.example .env
+# php artisan key:generate
+# php artisan jwt:generate
+```
+Configure your database on .env file then migrate and populate data with seeding. in short just do following command
+
+```
+# php artisan migrate
+# php artisan db:seed
 ```
 
-go to browser and check address http://localhost:8000 to test if it's work
+then serve with
+```
+# php artisan serve
+```
+Open your browser and access localhost on port 8000.
+to login as Developer use username : developer@developer.com with password : p@ssw0rd
+or as Super Administrator user/pass: superadmin@admin.com/superadmin
 
 for further development with front end run this command
 

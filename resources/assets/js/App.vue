@@ -1,7 +1,7 @@
 <template>
 <div>
     <pf-notifications ref="notif" :toast="true"></pf-notifications>
-    <pf-layout :disabled="!$auth.check()" :horizontal="true" :display="display">
+    <pf-layout :disabled="!$auth.check()" :horizontal="true" :horizontal-secondary="true" :display="display">
         <router-link slot="brand" :to="{ name: 'home' }" :exact="true" class="navbar-brand">
             <span class="navbar-brand-name">P A T T E R N F L Y - <span class="text-small">Enterprise Pattern</span></span>
         </router-link>

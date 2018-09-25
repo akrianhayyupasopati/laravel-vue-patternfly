@@ -54,14 +54,14 @@
     </pf-modal>
 		<legend>Users Management</legend>
         <pf-spinner :loading="loading" size="lg">
-        <pf-toolbar :views="views" :view="view" :filterFields="filterFields" :filters="filters" :columns="cols" :pickedColumns="pickedCols" :sortFields="sortFields" :sortBy="sortBy" :sortDirection="sortDirection" :resultCount="resultCount" @update:filters="updateFilters" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
+        <pf-toolbar :views="views" :view="view" :filterFields="filterFields" :filters="filters" :columns="cols" :pickedColumns="pickedCols" :sortFields="sortFields" :sortBy="sortBy" :sortDirection="sortDirection" :resultCount="resultCount" @update:filters="updateFilters" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView" @update:sortBy="updateSortBy" @update:sortDirection="updateSortDirection">
           <div class="form-group">
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')" @click="add" ><i class="fa fa-plus-square"></i></button>
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-users')"  @click="confirmDelete(null, true)"><i class="fa fa-trash"></i></button>
             <download-excel class="btn btn-default" type="button" :data="excelData" :fields="excelFields" name="users.xls"><i class="fa fa-file-excel-o"></i></download-excel>
           </div>
         </pf-toolbar>
-        <pf-table v-show="this.view=='table'" :striped="true" :bordered="true" :hover="true" :selectable="true" :sortable="true" :columns="tableColumns" :scrollable="false" :rows="rows" :page="page" :totalItems="totalItems" :itemsPerPage="perPage" @update:page="updatePage" @update:itemsPerPage="updatePerPage" ref="selectionTable">
+        <pf-table v-show="this.view=='table'" :striped="true" :bordered="true" :hover="true" :selectable="true" :sortable="false" :columns="tableColumns" :scrollable="false" :rows="rows" :page="page" :totalItems="totalItems" :itemsPerPage="perPage" @update:page="updatePage" @update:itemsPerPage="updatePerPage" ref="selectionTable">
           <template slot-scope="data">
             <td v-if="tableColumns.includes('Id')">{{data.row.id}}</td>
             <td v-if="tableColumns.includes('Name')">{{data.row.name}}</td>
@@ -284,6 +284,12 @@ export default {
       this.params.search = this.filters;
       this.params.page = 1;
       this.usersList();
+    },
+    updateSortBy: function(sortBy) {
+      this.sortBy = sortBy
+    },
+    updateSortDirection: function(sortDirection) {
+      this.sortDirection = sortDirection
     },
     sort: function(sortBy, sortDirection) {
       this.params.sortBy = sortBy;
