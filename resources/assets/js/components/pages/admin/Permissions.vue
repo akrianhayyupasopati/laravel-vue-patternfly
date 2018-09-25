@@ -36,7 +36,7 @@
     </pf-modal>
 		<legend>Permissions Management</legend>
         <pf-spinner :loading="loading" size="lg">
-        <pf-toolbar :views="views" :view="view" :filter-fields="filterFields" :filters="filters" :columns="cols" :picked-columns="pickedCols" :sort-fields="sortFields" :sort-by="sortBy" :sort-direction="sortDirection" :result-count="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
+        <pf-toolbar :views="views" :view="view" :filter-fields="filterFields" :filters="filters" :columns="cols" :picked-columns="pickedCols" :sort-fields="sortFields" :sort-by="sortBy" :sort-direction="sortDirection" :result-count="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView" @update:sortBy="updateSortBy" @update:sortDirection="updateSortDirection">
           <div class="form-group">
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-permissions')" @click="add" ><i class="fa fa-plus-square"></i></button>
             <button class="btn btn-default" type="button"  :disabled="!this.can('manage-permissions')"  @click="multiDelete"><i class="fa fa-trash"></i></button>
@@ -236,6 +236,12 @@ export default {
       this.params.search = this.filters;
       this.params.page = 1;
       this.permissionsList();
+    },
+    updateSortBy: function(sortBy) {
+      this.sortBy = sortBy
+    },
+    updateSortDirection: function(sortDirection) {
+      this.sortDirection = sortDirection
     },
     sort: function(sortBy, sortDirection) {
       this.params.sortBy = sortBy;

@@ -44,7 +44,7 @@
     </pf-modal>
 		<legend>Roles Management</legend>
         <pf-spinner :loading="loading" size="lg">
-        <pf-toolbar :views="views" :view="view" :filter-fields="filterFields" :filters="filters" :columns="cols" :picked-columns="pickedCols" :sort-fields="sortFields" :sort-by="sortBy" :sort-direction="sortDirection" :result-count="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView">
+        <pf-toolbar :views="views" :view="view" :filter-fields="filterFields" :filters="filters" :columns="cols" :picked-columns="pickedCols" :sort-fields="sortFields" :sort-by="sortBy" :sort-direction="sortDirection" :result-count="resultCount" @update:filters="filter" @sort-by="sort" @update:pickedColumns="setVisible" @update:view="setView" @update:sortBy="updateSortBy" @update:sortDirection="updateSortDirection">
           <div class="form-group">
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-roles')" @click="add" ><i class="fa fa-plus-square"></i></button>
             <button class="btn btn-default" type="button" :disabled="!this.can('manage-roles')" @click="multiDelete"><i class="fa fa-trash"></i></button>
@@ -301,6 +301,17 @@ export default {
     },
     setView: function(activeView) {
       this.view = activeView;
+    },
+    updateSortBy: function(sortBy) {
+      this.sortBy = sortBy
+    },
+    updateSortDirection: function(sortDirection) {
+      this.sortDirection = sortDirection
+    },
+    sort: function(sortBy, sortDirection) {
+      this.params.sortBy = sortBy;
+      this.params.sortDirection = sortDirection;
+      this.rolesList();
     },
     add: function(event) {
       if (this.can("manage-roles")) {
